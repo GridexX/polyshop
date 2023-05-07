@@ -1,0 +1,183 @@
+# Root docker-compose
+version: '3.9'
+
+networks:
+  spring_microservices:
+    name: spring_microservices
+  internal_inventory_query:
+  internal_inventory_command:
+  internal_cart:
+  internal_catalog:
+  internal_order:
+
+volumes:
+  maven-repo:
+  postgres_inventory:
+  postgres_inventory_command:
+  postgres-data_order:
+  redis-data:
+  mongo_data:
+    
+services:
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    expose:
+      - "5672"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_PASS=password
+    networks:
+      - spring_microservices
+
+
+  discovery-server:
+    image: gridexx/polyshop-discovery-server:latest
+    container_name: discovery-server
+    networks:
+      - spring_microservices
+    environment:
+      - EUREKA_HOST=discovery-server
+
+  gateway:
+    image: gridexx/polyshop-gateway:cqrs
+    container_name: gateway
+    expose:
+      - 8082
+    environment:
+      - EUREKA_HOST=discovery-server
+    networks:
+      - spring_microservices
+
+  postgres_inventory_query:
+    image: postgres:15.2
+    container_name: postgres_inventory_query
+    expose:
+      - "5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: inventory
+    networks:
+      - internal_inventory_query
+    volumes:
+      - postgres_inventory_query:/var/lib/postgresql/data
+
+  inventory_query:
+    image: gridexx/polyshop-inventory_query:latest
+    container_name: inventory_query
+    expose:
+      - 8082
+    environment:
+      - EUREKA_HOST=discovery-server
+    networks:
+      - spring_microservices
+      - internal_inventory_query
+
+    postgres_inventory_command:
+      image: postgres:15.2
+      container_name: postgres_inventory_command
+      expose:
+        - "5432"
+      environment:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+        POSTGRES_DB: inventory
+      networks:
+        - internal_inventory_command
+      volumes:
+        - postgres_inventory_command:/var/lib/postgresql/data
+
+
+  inventory_command:
+    image: gridexx/polyshop-inventory_command:latest
+    container_name: inventory_command
+    expose:
+      - 8088
+    environment:
+      - EUREKA_HOST=discovery-server
+    networks:
+      - spring_microservices
+      - internal_inventory_command
+
+  payment:
+    image: gridexx/polyshop-payment:latest
+    container_name: payment
+    networks:
+      - spring_microservices
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    volumes:
+      - redis-data:/data
+    expose:
+      - 6379  
+    networks:
+      - internal_cart
+
+  cart:
+    image: gridexx/polyshop-cart:latest
+    environment:
+      - EUREKA_HOST=discovery-server
+    networks:
+      - spring_microservices
+      - internal_cart
+
+
+  mongo:
+    image: bitnami/mongodb:4.4.14-debian-10-r33
+    container_name: mongo-catalog
+    volumes:
+      - mongo_data:/bitnami/mongodb
+    expose:
+      - 27017
+    environment:
+      - MONGODB_ROOT_PASSWORD=catalog 
+    networks:
+      - internal_catalog
+
+  catalog:
+    image: gridexx/polyshop-catalog:latest
+    environment:
+      - EUREKA_HOST=discovery-server
+    networks:
+      - spring_microservices
+      - internal_catalog
+
+  frontend:
+    image: gridexx/polyshop-frontend:latest
+    container_name: polyshop_frontend
+    expose:
+      - 3000
+    networks:
+      - spring_microservices
+
+  postgres_order:
+    image: postgres:15.2
+    expose:
+      - "5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: order
+    networks:
+      - internal_order
+    volumes:
+      - postgres-data_order:/var/lib/postgresql/data
+      
+  order:
+    image: gridexx/polyshop-order:latest
+    environment:
+      - EUREKA_HOST=discovery-server
+    networks:
+      - spring_microservices
+      - internal_order
+
+  shipping:
+    image: gridexx/polyshop-shipping:latest
+    networks:
+      - spring_microservices

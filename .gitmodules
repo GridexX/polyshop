@@ -1,0 +1,30 @@
+[submodule "polyshop-discovery-server"]
+	path = polyshop-discovery-server
+	url = git@github.com:GridexX/polyshop-discovery-server.git
+[submodule "polyshop-gateway"]
+	path = polyshop-gateway
+	url = git@github.com:GridexX/polyshop-gateway.git
+[submodule "polyshop-catalog"]
+	path = polyshop-catalog
+	url = git@github.com:GridexX/polyshop-catalog.git
+[submodule "polyshop-order"]
+	path = polyshop-order
+	url = git@github.com:GridexX/polyshop-order.git
+[submodule "polyshop-shipping"]
+	path = polyshop-shipping
+	url = git@github.com:GridexX/polyshop-shipping.git
+[submodule "polyshop-payment"]
+	path = polyshop-payment
+	url = git@github.com:GridexX/polyshop-payment.git
+[submodule "polyshop-inventory"]
+	path = polyshop-inventory
+	url = git@github.com:GridexX/polyshop-inventory.git
+[submodule "polyshop-frontend"]
+	path = polyshop-frontend
+	url = git@github.com:GridexX/polyshop-frontend.git
+[submodule "polyshop-inventory-command"]
+	path = polyshop-inventory-command
+	url = git@github.com:GridexX/polyshop-inventory-command.git
+[submodule "polyshop-inventory-query"]
+	path = polyshop-inventory-query
+	url = git@github.com:GridexX/polyshop-inventory-query.git
