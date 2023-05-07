@@ -1,8 +1,8 @@
 # PolyShop
 
-This project is showcase a sample microservice architecture for a Shopping Application. It 
+This project is showcase a sample microservice architecture for a Shopping Application.
 
-The project is deployed at the following: [polyshop.gridexx.fr](https://polyshop.gridexx.fr)
+The project is deployed at the following URL : [polyshop.gridexx.fr](https://polyshop.gridexx.fr)
 
 ## Architecture
 
